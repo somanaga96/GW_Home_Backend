@@ -1,9 +1,9 @@
 package com.example.homeinsurance.controller;
 
 import com.example.homeinsurance.model.Account;
-import com.example.homeinsurance.repository.AccountRepository;
+import com.example.homeinsurance.service.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -11,22 +11,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/accounts")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173") // adjust your frontend URL
 public class AccountController {
+    @Autowired
+    private final AccountService service;
 
-    private final AccountRepository repo;
-
-    public AccountController(AccountRepository repo) {
-        this.repo = repo;
+    public AccountController(AccountService service) {
+        this.service = service;
     }
 
-    // CREATE account from frontend
-    @PostMapping
-    public Account create(@RequestBody Account account) {
-        return repo.save(account);
-    }
-
-    // SEARCH accounts
+    // GET /api/accounts?brandName=&firstName=&lastName=&dob=yyyy-MM-dd&postcode=&quoteRef=
     @GetMapping
     public List<Account> search(
             @RequestParam(required = false) String brandName,
@@ -36,21 +30,18 @@ public class AccountController {
             @RequestParam(required = false) String postcode,
             @RequestParam(required = false) String quoteRef
     ) {
-        return repo.search(
-                brandName == null || brandName.isBlank() ? null : brandName,
-                firstName == null || firstName.isBlank() ? null : firstName,
-                lastName == null || lastName.isBlank() ? null : lastName,
-                dob,
-                postcode == null || postcode.isBlank() ? null : postcode,
-                quoteRef == null || quoteRef.isBlank() ? null : quoteRef
-        );
+        return service.search(brandName, firstName, lastName, dob, postcode, quoteRef);
     }
 
-    // GET account by ID
+    // optionally get single account
     @GetMapping("/{id}")
-    public ResponseEntity<Account> getOne(@PathVariable Long id) {
-        return repo.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public Account getOne(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
+    // create (for test / seed use)
+    @PostMapping
+    public Account create(@RequestBody Account account) {
+        return service.save(account);
     }
 }
