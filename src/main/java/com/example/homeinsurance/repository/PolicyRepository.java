@@ -1,10 +1,9 @@
 package com.example.homeinsurance.repository;
 
-import com.example.homeinsurance.model.Account;
+import com.example.homeinsurance.model.Policy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, Long> {
-
+public interface PolicyRepository extends JpaRepository<Policy, Long> {
 }
