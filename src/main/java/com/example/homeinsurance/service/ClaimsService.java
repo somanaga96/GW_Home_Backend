@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ClaimsService {
-@Autowired
+    @Autowired
     private final ClaimsPageDataRepository repo;
 
     public ClaimsService(ClaimsPageDataRepository repo) {

@@ -1,43 +1,30 @@
 package com.example.homeinsurance.model.quote;
 
+import com.example.homeinsurance.model.Submission;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
+import lombok.*;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Table(name = "quote")
+@Builder
 public class Quote {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // summary values
-    private Double totalPolicyPremium;
-    private Double buildingsSumInsured;
-    private Double contentsSumInsured;
+    private String quoteNumber;   // Q-900012
+    private String status;        // DRAFT / GENERATED / PURCHASED
+    private Double premium;       // Example: 421.87
+    private Double buildingSumInsured;
+    private Double contentSumInsured;
 
-    private String offering;
-    private String claimFreeBuildings;
-    private String claimFreeContents;
-
-    // excesses
-    private Double totalPropertyExcess;
-    private Double compulsoryExcess;
-    private Double voluntaryExcess;
-
-    private Double totalSubsidenceExcess;
-    private Double totalEscapeOfWaterExcess;
-
-    // risk address display string
-    @Lob
-    private String riskAddress;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QuoteCoverRow> coverRows;
+    // ⭐ Many quotes → One submission
+    @ManyToOne
+    @JoinColumn(name = "submission_id")
+    @JsonBackReference
+    private Submission submission;
 }

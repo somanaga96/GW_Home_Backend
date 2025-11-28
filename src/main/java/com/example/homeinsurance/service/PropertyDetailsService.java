@@ -9,14 +9,22 @@ import java.util.List;
 
 @Service
 public class PropertyDetailsService {
-@Autowired
+    @Autowired
     private final PropertyDetailsRepository repo;
 
     public PropertyDetailsService(PropertyDetailsRepository repo) {
         this.repo = repo;
     }
 
-    public PropertyDetails save(PropertyDetails p) { return repo.save(p); }
-    public List<PropertyDetails> findAll() { return repo.findAll(); }
-    public PropertyDetails findById(Long id) { return repo.findById(id).orElse(null); }
+    public PropertyDetails save(PropertyDetails p) {
+        return repo.save(p);
+    }
+
+    public List<PropertyDetails> findAll() {
+        return repo.findAll();
+    }
+
+    public PropertyDetails findById(Long id) {
+        return repo.findById(id).orElse(null);
+    }
 }

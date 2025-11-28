@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/claims")
 @CrossOrigin(origins = "http://localhost:5173")
 public class ClaimsController {
-@Autowired
+    @Autowired
     private final ClaimsService service;
 
     public ClaimsController(ClaimsService service) {

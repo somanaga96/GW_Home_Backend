@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class YourNeedsService {
     @Autowired
-
     private final YourNeedsRepository repo;
 
     public YourNeedsService(YourNeedsRepository repo) {

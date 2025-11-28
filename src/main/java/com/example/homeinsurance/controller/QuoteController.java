@@ -2,31 +2,25 @@ package com.example.homeinsurance.controller;
 
 import com.example.homeinsurance.model.quote.Quote;
 import com.example.homeinsurance.service.QuoteService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/quotes")
+@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:5173")
 public class QuoteController {
     @Autowired
-    private final QuoteService svc;
-    public QuoteController(QuoteService svc){ this.svc = svc; }
+    private final QuoteService service;
 
-    @GetMapping
-    public List<Quote> all(){ return svc.findAll(); }
+    @PostMapping("/generate/{submissionId}")
+    public Quote generate(@PathVariable Long submissionId, @RequestParam double premium) {
+        return service.generateQuote(submissionId, premium);
+    }
 
     @GetMapping("/{id}")
-    public Quote one(@PathVariable Long id){ return svc.findById(id); }
-
-    @PostMapping
-    public Quote create(@RequestBody Quote q){ return svc.save(q); }
-
-    @PutMapping("/{id}")
-    public Quote update(@PathVariable Long id, @RequestBody Quote q){
-        q.setId(id);
-        return svc.save(q);
+    public Quote get(@PathVariable Long id) {
+        return service.get(id);
     }
 }
