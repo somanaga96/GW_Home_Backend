@@ -3,7 +3,6 @@ package com.example.homeinsurance.controller;
 import com.example.homeinsurance.model.Policy;
 import com.example.homeinsurance.service.PolicyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,16 +10,24 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:5173")
 public class PolicyController {
-    @Autowired
+
     private final PolicyService service;
 
-    @PostMapping("/bind/{quoteId}")
-    public Policy bind(@PathVariable Long quoteId) {
+    // ⭐ Create a policy from a quote
+    @PostMapping("/create/{quoteId}")
+    public Policy createPolicy(@PathVariable String quoteId) {
         return service.createPolicy(quoteId);
     }
 
+    // ⭐ Get a policy by ID
     @GetMapping("/{id}")
-    public Policy get(@PathVariable Long id) {
-        return service.createPolicy(id);
+    public Policy getPolicy(@PathVariable Long id) {
+        return service.getPolicy(id);
+    }
+
+    // ⭐ Find a policy from quote
+    @GetMapping("/from-quote/{quoteId}")
+    public Policy getPolicyFromQuote(@PathVariable Long quoteId) {
+        return service.getPolicyByQuoteId(quoteId);
     }
 }

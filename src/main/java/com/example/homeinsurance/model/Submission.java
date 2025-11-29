@@ -7,8 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -21,18 +19,19 @@ public class Submission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String submissionNumber; // S-100001
-    private String status; // DRAFT / QUOTED / BOUND
+    private String submissionNumber;
+    private String status;
     private LocalDate createdDate;
 
-    // ⭐ Many submissions → One account
+    // Many submissions → One account
     @ManyToOne
     @JoinColumn(name = "account_id")
-    @JsonBackReference
+    @JsonBackReference("account-submissions")
     private Account account;
 
-    // ⭐ One submission → Many quotes
-    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Quote> quotes = new ArrayList<>();
+    // One submission → One quote
+    @OneToOne(mappedBy = "submission", cascade = CascadeType.ALL)
+    @JsonManagedReference("submission-quote")
+    private Quote quote;
 }
+

@@ -1,9 +1,14 @@
 package com.example.homeinsurance.model.quote;
 
+import com.example.homeinsurance.model.Account;
+import com.example.homeinsurance.model.Policy;
 import com.example.homeinsurance.model.Submission;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -16,15 +21,25 @@ public class Quote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String quoteNumber;   // Q-900012
-    private String status;        // DRAFT / GENERATED / PURCHASED
-    private Double premium;       // Example: 421.87
-    private Double buildingSumInsured;
-    private Double contentSumInsured;
+    private String quoteNumber;
+    private LocalDate createdDate;
+    private String status;
 
-    // ⭐ Many quotes → One submission
-    @ManyToOne
+    // One Quote → One Submission
+    @OneToOne
     @JoinColumn(name = "submission_id")
-    @JsonBackReference
+    @JsonBackReference("submission-quote")
     private Submission submission;
+
+    // Many quotes → One account
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    @JsonBackReference("account-quotes")
+    private Account account;
+
+    // One Quote → One Policy
+    @OneToOne(mappedBy = "quote", cascade = CascadeType.ALL)
+    @JsonManagedReference("quote-policy")
+    private Policy policy;
 }
+

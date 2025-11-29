@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/quotes")
 @RequiredArgsConstructor
@@ -14,13 +16,21 @@ public class QuoteController {
     @Autowired
     private final QuoteService service;
 
-    @PostMapping("/generate/{submissionId}")
-    public Quote generate(@PathVariable Long submissionId, @RequestParam double premium) {
-        return service.generateQuote(submissionId, premium);
+    // ⭐ Create Quote for a Submission
+    @PostMapping("/create/{submissionId}")
+    public Quote createQuote(@PathVariable String submissionId) {
+        return service.createQuote(submissionId);
     }
 
+    // ⭐ Get Quote by ID
     @GetMapping("/{id}")
-    public Quote get(@PathVariable Long id) {
-        return service.get(id);
+    public Quote getQuote(@PathVariable Long id) {
+        return service.getQuote(id);
+    }
+
+    // ⭐ List all quotes for a Submission
+    @GetMapping("/submission/{submissionId}")
+    public List<Quote> getQuotesForSubmission(@PathVariable Long submissionId) {
+        return service.getQuotesBySubmissionId(submissionId);
     }
 }
