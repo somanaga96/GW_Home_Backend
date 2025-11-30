@@ -1,6 +1,6 @@
 package com.example.homeinsurance.service;
 
-import com.example.homeinsurance.model.YourNeeds;
+import com.example.homeinsurance.model.home.YourNeeds;
 import com.example.homeinsurance.repository.YourNeedsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

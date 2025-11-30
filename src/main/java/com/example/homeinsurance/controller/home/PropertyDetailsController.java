@@ -1,6 +1,6 @@
-package com.example.homeinsurance.controller;
+package com.example.homeinsurance.controller.home;
 
-import com.example.homeinsurance.model.PropertyDetails;
+import com.example.homeinsurance.model.home.PropertyDetails;
 import com.example.homeinsurance.service.PropertyDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -1,14 +1,14 @@
-package com.example.homeinsurance.model;
+package com.example.homeinsurance.model.home;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Table(name = "your_needs")
 public class YourNeeds {
 
@@ -16,8 +16,12 @@ public class YourNeeds {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String contentsCoverAmount;
+    // BACK reference to HomeDetails
+    @OneToOne(mappedBy = "yourNeeds")
+    @JsonBackReference("home-needs")
+    private HomeDetails homeDetails;
 
+    private String contentsCoverAmount;
     private Boolean bikesOver500;
     private Boolean highRiskItemsOver2000;
 

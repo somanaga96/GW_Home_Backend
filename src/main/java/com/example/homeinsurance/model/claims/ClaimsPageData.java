@@ -1,9 +1,9 @@
 package com.example.homeinsurance.model.claims;
 
+import com.example.homeinsurance.model.quote.Quote;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = "claimPage")
+@Table(name = "claim_page")
 public class ClaimsPageData {
 
     @Id
@@ -23,6 +23,13 @@ public class ClaimsPageData {
     private String claimFreeBuildingsYears;
     private String claimFreeContentsYears;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    // ---- Many claim items
+    @OneToMany(mappedBy = "claimsPage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClaimItem> claims;
+
+    // ---- Link back to Quote
+    @OneToOne
+    @JoinColumn(name = "quote_id")
+    @JsonBackReference("quote-claims")
+    private Quote quote;
 }

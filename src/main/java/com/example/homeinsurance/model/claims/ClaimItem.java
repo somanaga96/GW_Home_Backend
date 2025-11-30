@@ -1,15 +1,13 @@
 package com.example.homeinsurance.model.claims;
 
-import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
+import lombok.*;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = "claim")
+@Table(name = "claim_item")
 public class ClaimItem {
 
     @Id
@@ -19,7 +17,14 @@ public class ClaimItem {
     private String claimCause;
     private String cover;
     private String dateOfLoss;
+
     @Column(name = "claim_value")
     private Integer value;
+
     private Boolean sameAddress;
-    }
+
+    // Many Items → One Claims Page
+    @ManyToOne
+    @JoinColumn(name = "claim_page_id")
+    private ClaimsPageData claimsPage;
+}

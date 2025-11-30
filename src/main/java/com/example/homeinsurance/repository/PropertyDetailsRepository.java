@@ -1,6 +1,6 @@
 package com.example.homeinsurance.repository;
 
-import com.example.homeinsurance.model.PropertyDetails;
+import com.example.homeinsurance.model.home.PropertyDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

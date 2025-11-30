@@ -2,6 +2,7 @@ package com.example.homeinsurance.service;
 
 import com.example.homeinsurance.model.Account;
 import com.example.homeinsurance.model.Submission;
+import com.example.homeinsurance.model.home.HomeDetails;
 import com.example.homeinsurance.model.quote.Quote;
 import com.example.homeinsurance.repository.AccountRepository;
 import com.example.homeinsurance.repository.QuoteRepository;
@@ -25,25 +26,37 @@ public class QuoteService {
     private final AccountRepository accountRepo;
 
     // ⭐ CREATE QUOTE from Submission
-    public Quote createQuote(String submissionId) {
+    public Quote createQuote(String submissionId, HomeDetails homeDetails) {
 
-        Submission submission=submissionRepo.findBySubmissionNumberIgnoreCase(submissionId)
+        Submission submission = submissionRepo.findBySubmissionNumberIgnoreCase(submissionId)
                 .orElseThrow(() -> new RuntimeException("Submission number not found: " + submissionId));
 
-        Account acc = accountRepo.findById(submission.getAccount().getId())
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-
+        Account acc = submission.getAccount();
 
         Quote quote = Quote.builder()
                 .quoteNumber("QUO-" + UUID.randomUUID().toString().substring(0, 8))
                 .createdDate(LocalDate.now())
-                .status("QUOTED")
+                .status("Draft")
                 .submission(submission)
                 .account(acc)
                 .build();
 
-        return quoteRepo.save(quote);
+        // ⭐ Set back reference
+        homeDetails.setQuote(quote);
+
+        // ⭐ Set nested relations
+        if (homeDetails.getPropertyDetails() != null) {
+            // propertyDetails belongs to homeDetails
+        }
+        if (homeDetails.getYourNeeds() != null) {
+            // yourNeeds belongs to homeDetails
+        }
+
+        quote.setHomeDetails(homeDetails);
+
+        return quoteRepo.save(quote);   // ⭐ cascade saves homeDetails + nested entities
     }
+
 
     // ⭐ Get Quote By ID
     public Quote getQuote(Long id) {

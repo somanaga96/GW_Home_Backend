@@ -1,5 +1,7 @@
 package com.example.homeinsurance.controller;
 
+import com.example.homeinsurance.model.Account;
+import com.example.homeinsurance.model.home.HomeDetails;
 import com.example.homeinsurance.model.quote.Quote;
 import com.example.homeinsurance.service.QuoteService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +20,8 @@ public class QuoteController {
 
     // ⭐ Create Quote for a Submission
     @PostMapping("/create/{submissionId}")
-    public Quote createQuote(@PathVariable String submissionId) {
-        return service.createQuote(submissionId);
+    public Quote createQuote(@PathVariable String submissionId, @RequestBody HomeDetails homeDetails) {
+        return service.createQuote(submissionId, homeDetails);
     }
 
     // ⭐ Get Quote by ID
