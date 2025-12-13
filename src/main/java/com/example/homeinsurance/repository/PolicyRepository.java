@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface PolicyRepository extends JpaRepository<Policy, Long> {
 
     Optional<Policy> findByQuote_Submission_SubmissionNumber(String submissionNumber);
+
+    Optional<Policy> findByPolicyNumber(String policyNumber);
 }

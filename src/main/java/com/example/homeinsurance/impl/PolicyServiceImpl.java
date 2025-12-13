@@ -2,6 +2,7 @@ package com.example.homeinsurance.impl;
 
 import com.example.homeinsurance.dto.BindPolicyRequestDTO;
 import com.example.homeinsurance.dto.PolicyDTO;
+import com.example.homeinsurance.dto.cancel.CancelPolicyRequestDTO;
 import com.example.homeinsurance.entity.Policy;
 import com.example.homeinsurance.entity.Quote;
 import com.example.homeinsurance.entity.Submission;
@@ -48,6 +49,7 @@ public class PolicyServiceImpl implements PolicyService {
                 .paymentPlanType(request.getPaymentPlanType())
                 .paymentMethod(request.getPaymentMethod())
                 .quote(quote)
+                .status("Active")
                 .build();
 
         applyPaymentPlan(policy, totalPremium);

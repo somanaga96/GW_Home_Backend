@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "policies")
@@ -36,10 +38,15 @@ public class Policy {
     private Double depositAmount;
     private Integer installmentCount;
     private Double installmentAmount;
+    private String status;
 
     // ⭐ One Policy → One Quote
     @OneToOne
     @JoinColumn(name = "quote_id", nullable = false, unique = true)
     private Quote quote;
+
+    @OneToMany(mappedBy = "policy", cascade = CascadeType.ALL)
+    private List<Cancellation> cancellations = new ArrayList<>();
+
 
 }
