@@ -1,38 +1,26 @@
 package com.example.homeinsurance.controller;
 
-import com.example.homeinsurance.model.Account;
-import com.example.homeinsurance.model.home.HomeDetails;
-import com.example.homeinsurance.model.quote.Quote;
+import com.example.homeinsurance.dto.QuoteDTO;
 import com.example.homeinsurance.service.QuoteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/quotes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
 public class QuoteController {
-    @Autowired
-    private final QuoteService service;
 
-    // ⭐ Create Quote for a Submission
-    @PostMapping("/create/{submissionId}")
-    public Quote createQuote(@PathVariable String submissionId, @RequestBody HomeDetails homeDetails) {
-        return service.createQuote(submissionId, homeDetails);
+    private final QuoteService quoteService;
+
+    // ⭐ Click "Quote" in UI
+    @PostMapping("/submission/{submissionNumber}")
+    public QuoteDTO createQuote(@PathVariable String submissionNumber) {
+        return quoteService.createQuote(submissionNumber);
     }
 
-    // ⭐ Get Quote by ID
-    @GetMapping("/{id}")
-    public Quote getQuote(@PathVariable Long id) {
-        return service.getQuote(id);
-    }
-
-    // ⭐ List all quotes for a Submission
-    @GetMapping("/submission/{submissionId}")
-    public List<Quote> getQuotesForSubmission(@PathVariable Long submissionId) {
-        return service.getQuotesBySubmissionId(submissionId);
+    // ⭐ View Quote Summary
+    @GetMapping("/submission/{submissionNumber}")
+    public QuoteDTO getQuote(@PathVariable String submissionNumber) {
+        return quoteService.getQuoteBySubmission(submissionNumber);
     }
 }

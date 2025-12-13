@@ -1,36 +1,36 @@
 package com.example.homeinsurance.controller;
 
-import com.example.homeinsurance.model.Submission;
+import com.example.homeinsurance.dto.SubmissionDTO;
 import com.example.homeinsurance.service.SubmissionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/submission")
+@RequestMapping("/api/submissions")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
 public class SubmissionController {
-    @Autowired
-    private final SubmissionService service;
 
-    @PostMapping("/create/{accountId}")
-    public Submission create(@PathVariable Long accountId) {
-        return service.createSubmission(accountId);
+    private final SubmissionService submissionService;
+
+    // ⭐ Create Submission (GW Job Start)
+    @PostMapping("/account/{accountId}")
+    public SubmissionDTO create(@PathVariable Long accountId) {
+        return submissionService.createSubmission(accountId);
     }
 
-    @GetMapping("/{submission_id}")
-    public Submission getSubmissionBySubmissionId(@PathVariable String submission_id) {
-        return service.getSubmissionBySubmissionId(submission_id);
+    // ⭐ Fetch by submission number
+    @GetMapping("/{submissionNumber}")
+    public SubmissionDTO getBySubmissionNumber(
+            @PathVariable String submissionNumber
+    ) {
+        return submissionService.getBySubmissionNumber(submissionNumber);
     }
 
-    // ⭐ Get all submissions for an account
+    // ⭐ Get all submissions for account
     @GetMapping("/account/{accountId}")
-    public List<Submission> getAllSubmissionsForAccount(@PathVariable Long accountId) {
-        return service.getAllSubmissionsForAccount(accountId);
+    public List<SubmissionDTO> getByAccount(@PathVariable Long accountId) {
+        return submissionService.getSubmissionsByAccount(accountId);
     }
 }
-
-

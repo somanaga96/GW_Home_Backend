@@ -1,39 +1,48 @@
 package com.example.homeinsurance.controller;
 
-import com.example.homeinsurance.model.Account;
-import com.example.homeinsurance.model.Policy;
+import com.example.homeinsurance.dto.AccountDTO;
 import com.example.homeinsurance.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/accounts")
+@RequestMapping("/api/account")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
 public class AccountController {
-    @Autowired
-    private final AccountService service;
 
-    @PostMapping
-    public Account create(@RequestBody Account a) {
-        return service.save(a);
-    }
+    private final AccountService accountService;
 
-    @GetMapping
-    public List<Account> all() {
-        return service.all();
+    @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountDTO create(@Valid @RequestBody AccountDTO dto) {
+        return accountService.create(dto);
     }
 
     @GetMapping("/{id}")
-    public Account one(@PathVariable Long id) {
-        return service.get(id);
+    public AccountDTO getById(@PathVariable Long id) {
+        return accountService.getById(id);
     }
 
-//    @GetMapping("/policies/{id}")
-//    public List<Policy> getAllPoliciesForAccount(@PathVariable Long id) {
-//        return service.getAllPoliciesForAccount(id);
-//    }
+    @GetMapping
+    public List<AccountDTO> getAll() {
+        return accountService.getAll();
+    }
+
+    @PutMapping("/{id}")
+    public AccountDTO update(
+            @PathVariable Long id, @Valid
+            @RequestBody AccountDTO dto
+    ) {
+        return accountService.update(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        accountService.delete(id);
+    }
 }

@@ -1,40 +1,20 @@
 package com.example.homeinsurance.service;
 
-import com.example.homeinsurance.model.Account;
-import com.example.homeinsurance.model.Policy;
-import com.example.homeinsurance.model.Submission;
-import com.example.homeinsurance.repository.AccountRepository;
-import com.example.homeinsurance.repository.PolicyRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.homeinsurance.dto.AccountDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class AccountService {
-    @Autowired
-    private final AccountRepository repo;
-    @Autowired
-    private final PolicyRepository policyRepository;
+public interface AccountService {
 
-    public Account save(Account a) {
-        return repo.save(a);
-    }
+    AccountDTO create(AccountDTO dto);
 
-    public List<Account> all() {
-        return repo.findAll();
-    }
+    AccountDTO getById(Long id);
 
-    public Account get(Long id) {
-        return repo.findById(id).orElse(null);
-    }
+    List<AccountDTO> getAll();
 
-    //    Submission submission=submissionRepo.findBySubmissionNumberIgnoreCase(submissionId)
-//            .orElseThrow(() -> new RuntimeException("Submission number not found: " + submissionId));
-//    public List<Policy> getAllPoliciesForAccount(Long account_id) {
-//        Account account = repo.findById(account_id).orElseThrow(() -> new RuntimeException("Account not found :" + account_id));
-//        policyRepository.findByAccountId(account_id);
-//    }
+    AccountDTO update(Long id, AccountDTO dto);
+
+    void delete(Long id);
 }
