@@ -1,11 +1,9 @@
 package com.example.homeinsurance.service;
 
 import com.example.homeinsurance.dto.AccountDTO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface AccountService {
 
     AccountDTO create(AccountDTO dto);
@@ -17,4 +15,12 @@ public interface AccountService {
     AccountDTO update(Long id, AccountDTO dto);
 
     void delete(Long id);
+
+    List<AccountDTO> searchAccounts(
+            String brandName,
+            String firstName,
+            String lastName,
+            String dob,
+            String postcode
+    );
 }

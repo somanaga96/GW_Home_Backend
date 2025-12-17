@@ -44,4 +44,15 @@ public class Submission {
     // ⭐ One Submission → One Quote
     @OneToOne(mappedBy = "submission", cascade = CascadeType.ALL)
     private Quote quote;
+
+    // ===== Policy Info fields =====
+    private LocalDate coverStartDate;
+
+    private String promoName;
+
+    private String promoOverride;
+
+    private String crossSell;   // YES / NO
+
+    private String offering;    // BUILDINGS / CONTENTS / BOTH
 }
