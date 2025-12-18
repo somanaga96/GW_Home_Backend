@@ -1,7 +1,5 @@
 package com.example.homeinsurance.dto;
 
-import com.example.homeinsurance.enums.PaymentMethod;
-import com.example.homeinsurance.enums.PaymentPlanType;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -11,9 +9,12 @@ import lombok.*;
 @Builder
 public class BindPolicyRequestDTO {
 
-    @NotNull
-    private PaymentPlanType paymentPlanType;
+    @NotNull(message = "paymentPlanType must not be null")
+    private String paymentPlanType;   // SINGLE_PAYMENT / DEPOSIT_AND_INSTALLMENTS / FULL_INSTALLMENTS
 
-    @NotNull
-    private PaymentMethod paymentMethod;
+    @NotNull(message = "paymentMethod must not be null")
+    private String paymentMethod;     // CARD / ACCOUNT
+
+    private Integer preferredPaymentDate;
+    private Boolean autoRenew;
 }

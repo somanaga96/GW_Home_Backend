@@ -7,4 +7,6 @@ import com.example.homeinsurance.dto.PolicyDTO;
 public interface PolicyService {
 
     PolicyDTO bindPolicy(String submissionNumber, BindPolicyRequestDTO request);
+
+    PolicyDTO getPolicy(String policyNumber);
 }

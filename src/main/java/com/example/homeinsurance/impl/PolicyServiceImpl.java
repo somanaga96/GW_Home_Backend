@@ -2,10 +2,10 @@ package com.example.homeinsurance.impl;
 
 import com.example.homeinsurance.dto.BindPolicyRequestDTO;
 import com.example.homeinsurance.dto.PolicyDTO;
-import com.example.homeinsurance.dto.cancel.CancelPolicyRequestDTO;
 import com.example.homeinsurance.entity.Policy;
 import com.example.homeinsurance.entity.Quote;
 import com.example.homeinsurance.entity.Submission;
+import com.example.homeinsurance.enums.PaymentMethod;
 import com.example.homeinsurance.enums.PaymentPlanType;
 import com.example.homeinsurance.repository.PolicyRepository;
 import com.example.homeinsurance.repository.SubmissionRepository;
@@ -26,19 +26,41 @@ public class PolicyServiceImpl implements PolicyService {
     @Override
     public PolicyDTO bindPolicy(String submissionNumber, BindPolicyRequestDTO request) {
 
+        // ---------- Load Submission ----------
         Submission submission = submissionRepository
                 .findBySubmissionNumberIgnoreCase(submissionNumber)
                 .orElseThrow(() -> new RuntimeException("Submission not found"));
 
-        if (!"QUOTED".equals(submission.getStatus())) {
+        if (!"QUOTED".equalsIgnoreCase(submission.getStatus())) {
             throw new RuntimeException("Submission must be QUOTED before binding");
         }
 
+        // ---------- Load Quote ----------
         Quote quote = submission.getQuote();
         if (quote == null) {
             throw new RuntimeException("Quote not found");
         }
 
+        // ---------- Safe Enum Conversion ----------
+        PaymentPlanType planType;
+        try {
+            planType = PaymentPlanType.valueOf(request.getPaymentPlanType());
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Invalid paymentPlanType: " + request.getPaymentPlanType()
+            );
+        }
+
+        PaymentMethod paymentMethod;
+        try {
+            paymentMethod = PaymentMethod.valueOf(request.getPaymentMethod());
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Invalid paymentMethod: " + request.getPaymentMethod()
+            );
+        }
+
+        // ---------- Create Policy ----------
         double totalPremium = quote.getTotalPremium();
 
         Policy policy = Policy.builder()
@@ -46,46 +68,64 @@ public class PolicyServiceImpl implements PolicyService {
                 .effectiveDate(LocalDate.now())
                 .expiryDate(LocalDate.now().plusYears(1))
                 .totalPremium(totalPremium)
-                .paymentPlanType(request.getPaymentPlanType())
-                .paymentMethod(request.getPaymentMethod())
+                .paymentPlanType(planType)
+                .paymentMethod(paymentMethod)
                 .quote(quote)
-                .status("Active")
+                .status("ACTIVE")
                 .build();
 
+        // ---------- Apply Payment Plan ----------
         applyPaymentPlan(policy, totalPremium);
 
+        // ---------- Update Submission ----------
         submission.setStatus("BOUND");
+        submissionRepository.save(submission);
 
+        // ---------- Save Policy ----------
         policyRepository.save(policy);
 
         return toDTO(policy);
     }
 
-    // ---------------- Payment Logic ----------------
+    @Override
+    public PolicyDTO getPolicy(String policyNumber) {
+        Policy policy = policyRepository.findByPolicyNumber(policyNumber)
+                .orElseThrow(() -> new RuntimeException("Policy not found: " + policyNumber));
+
+        return toDTO(policy);
+    }
+
+
+    // ================= PAYMENT LOGIC =================
 
     private void applyPaymentPlan(Policy policy, double totalPremium) {
 
-        if (policy.getPaymentPlanType() == PaymentPlanType.SINGLE_PAYMENT) {
-            policy.setDepositAmount(totalPremium);
-            policy.setInstallmentCount(0);
-            policy.setInstallmentAmount(0.0);
-        }
+        switch (policy.getPaymentPlanType()) {
 
-        if (policy.getPaymentPlanType() == PaymentPlanType.DEPOSIT_AND_INSTALLMENTS) {
-            double deposit = totalPremium * 0.25; // 25% deposit
-            double remaining = totalPremium - deposit;
+            case SINGLE_PAYMENT -> {
+                policy.setDepositAmount(totalPremium);
+                policy.setInstallmentCount(0);
+                policy.setInstallmentAmount(0.0);
+            }
 
-            policy.setDepositAmount(deposit);
-            policy.setInstallmentCount(11);
-            policy.setInstallmentAmount(remaining / 11);
-        }
+            case DEPOSIT_AND_INSTALLMENTS -> {
+                double deposit = totalPremium * 0.25;
+                double remaining = totalPremium - deposit;
 
-        if (policy.getPaymentPlanType() == PaymentPlanType.FULL_INSTALLMENTS) {
-            policy.setDepositAmount(0.0);
-            policy.setInstallmentCount(12);
-            policy.setInstallmentAmount(totalPremium / 12);
+                policy.setDepositAmount(deposit);
+                policy.setInstallmentCount(11);
+                policy.setInstallmentAmount(remaining / 11);
+            }
+
+            case FULL_INSTALLMENTS -> {
+                policy.setDepositAmount(0.0);
+                policy.setInstallmentCount(12);
+                policy.setInstallmentAmount(totalPremium / 12);
+            }
         }
     }
+
+    // ================= DTO MAPPER =================
 
     private PolicyDTO toDTO(Policy policy) {
         return PolicyDTO.builder()

@@ -1,6 +1,6 @@
 package com.example.homeinsurance.enums;
 
-public enum PaymentMethod {
+public enum  PaymentMethod {
     CARD,
     BANK_ACCOUNT
 }

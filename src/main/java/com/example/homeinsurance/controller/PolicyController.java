@@ -50,5 +50,10 @@ public class PolicyController {
         return reinstatementService.reinstatePolicy(policyNumber, request);
     }
 
+    @GetMapping("/{policyNumber}")
+    public PolicyDTO getPolicy(@PathVariable String policyNumber) {
+        return policyService.getPolicy(policyNumber);
+    }
+
 
 }
