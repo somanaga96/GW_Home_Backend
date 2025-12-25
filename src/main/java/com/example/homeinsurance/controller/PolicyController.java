@@ -1,6 +1,7 @@
 package com.example.homeinsurance.controller;
 
 import com.example.homeinsurance.dto.BindPolicyRequestDTO;
+import com.example.homeinsurance.dto.SubmissionDTO;
 import com.example.homeinsurance.dto.cancel.CancelPolicyRequestDTO;
 import com.example.homeinsurance.dto.PolicyDTO;
 import com.example.homeinsurance.dto.cancel.CancellationDTO;
@@ -12,6 +13,8 @@ import com.example.homeinsurance.service.ReinstatementService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/policies")
@@ -54,6 +57,10 @@ public class PolicyController {
     public PolicyDTO getPolicy(@PathVariable String policyNumber) {
         return policyService.getPolicy(policyNumber);
     }
-
+    // ⭐ Get all submissions for account
+    @GetMapping("/account/{accountId}")
+    public List<PolicyDTO> getByAccount(@PathVariable Long accountId) {
+        return policyService.getPoliciesByAccount(accountId);
+    }
 
 }

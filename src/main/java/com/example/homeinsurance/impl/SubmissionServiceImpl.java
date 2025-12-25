@@ -34,7 +34,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                 .account(account)
                 .build();
 
-        return toDTO(submissionRepository.save(submission));
+        return toSubmissionDTO(submissionRepository.save(submission));
     }
 
     @Override
@@ -43,18 +43,18 @@ public class SubmissionServiceImpl implements SubmissionService {
                 .findBySubmissionNumberIgnoreCase(submissionNumber)
                 .orElseThrow(() -> new RuntimeException("Submission not found"));
 
-        return toDTO(submission);
+        return toSubmissionDTO(submission);
     }
 
     @Override
     public List<SubmissionDTO> getSubmissionsByAccount(Long accountId) {
         return submissionRepository.findAll().stream()
                 .filter(s -> s.getAccount().getId().equals(accountId))
-                .map(this::toDTO)
+                .map(this::toSubmissionDTO)
                 .toList();
     }
 
-    private SubmissionDTO toDTO(Submission submission) {
+    private SubmissionDTO toSubmissionDTO(Submission submission) {
         return SubmissionDTO.builder()
                 .id(submission.getId())
                 .submissionNumber(submission.getSubmissionNumber())

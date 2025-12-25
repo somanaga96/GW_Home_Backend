@@ -1,5 +1,6 @@
 package com.example.homeinsurance.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -9,7 +10,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class PolicyDTO {
-
     private String policyNumber;
     private LocalDate effectiveDate;
     private LocalDate expiryDate;

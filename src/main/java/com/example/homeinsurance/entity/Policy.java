@@ -48,5 +48,10 @@ public class Policy {
     @OneToMany(mappedBy = "policy", cascade = CascadeType.ALL)
     private List<Cancellation> cancellations = new ArrayList<>();
 
+    // ⭐ Many Policies → One Account
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
 
 }

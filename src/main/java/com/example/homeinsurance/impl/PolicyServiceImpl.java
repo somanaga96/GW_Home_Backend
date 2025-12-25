@@ -2,19 +2,27 @@ package com.example.homeinsurance.impl;
 
 import com.example.homeinsurance.dto.BindPolicyRequestDTO;
 import com.example.homeinsurance.dto.PolicyDTO;
+import com.example.homeinsurance.dto.SubmissionDTO;
+import com.example.homeinsurance.entity.Account;
 import com.example.homeinsurance.entity.Policy;
 import com.example.homeinsurance.entity.Quote;
 import com.example.homeinsurance.entity.Submission;
 import com.example.homeinsurance.enums.PaymentMethod;
 import com.example.homeinsurance.enums.PaymentPlanType;
+import com.example.homeinsurance.repository.AccountRepository;
 import com.example.homeinsurance.repository.PolicyRepository;
 import com.example.homeinsurance.repository.SubmissionRepository;
 import com.example.homeinsurance.service.PolicyService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
+
+import static com.example.homeinsurance.utils.RandomGenerator.generatePolicyNumber;
+import static com.example.homeinsurance.utils.RandomGenerator.parseEnum;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +30,13 @@ public class PolicyServiceImpl implements PolicyService {
 
     private final SubmissionRepository submissionRepository;
     private final PolicyRepository policyRepository;
+    private final AccountRepository accountRepository;
 
     @Override
+    @Transactional
     public PolicyDTO bindPolicy(String submissionNumber, BindPolicyRequestDTO request) {
 
-        // ---------- Load Submission ----------
+        // ---------- Load Submission with Account & Quote ----------
         Submission submission = submissionRepository
                 .findBySubmissionNumberIgnoreCase(submissionNumber)
                 .orElseThrow(() -> new RuntimeException("Submission not found"));
@@ -35,43 +45,42 @@ public class PolicyServiceImpl implements PolicyService {
             throw new RuntimeException("Submission must be QUOTED before binding");
         }
 
-        // ---------- Load Quote ----------
         Quote quote = submission.getQuote();
         if (quote == null) {
-            throw new RuntimeException("Quote not found");
+            throw new RuntimeException("Quote not found for submission");
         }
 
-        // ---------- Safe Enum Conversion ----------
-        PaymentPlanType planType;
-        try {
-            planType = PaymentPlanType.valueOf(request.getPaymentPlanType());
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Invalid paymentPlanType: " + request.getPaymentPlanType()
-            );
+        Account account = submission.getAccount();
+        if (account == null) {
+            throw new RuntimeException("Account not linked to submission");
         }
 
-        PaymentMethod paymentMethod;
-        try {
-            paymentMethod = PaymentMethod.valueOf(request.getPaymentMethod());
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Invalid paymentMethod: " + request.getPaymentMethod()
-            );
-        }
+        // ---------- Enum Conversion (Fail Fast) ----------
+        PaymentPlanType planType = parseEnum(
+                request.getPaymentPlanType(),
+                PaymentPlanType.class,
+                "paymentPlanType"
+        );
+
+        PaymentMethod paymentMethod = parseEnum(
+                request.getPaymentMethod(),
+                PaymentMethod.class,
+                "paymentMethod"
+        );
 
         // ---------- Create Policy ----------
         double totalPremium = quote.getTotalPremium();
 
         Policy policy = Policy.builder()
-                .policyNumber("POL-" + UUID.randomUUID())
+                .policyNumber(generatePolicyNumber())
                 .effectiveDate(LocalDate.now())
                 .expiryDate(LocalDate.now().plusYears(1))
                 .totalPremium(totalPremium)
                 .paymentPlanType(planType)
                 .paymentMethod(paymentMethod)
-                .quote(quote)
                 .status("ACTIVE")
+                .quote(quote)
+                .account(account)
                 .build();
 
         // ---------- Apply Payment Plan ----------
@@ -79,13 +88,13 @@ public class PolicyServiceImpl implements PolicyService {
 
         // ---------- Update Submission ----------
         submission.setStatus("BOUND");
-        submissionRepository.save(submission);
 
-        // ---------- Save Policy ----------
+        // ---------- Persist ----------
         policyRepository.save(policy);
 
         return toDTO(policy);
     }
+
 
     @Override
     public PolicyDTO getPolicy(String policyNumber) {
@@ -93,6 +102,16 @@ public class PolicyServiceImpl implements PolicyService {
                 .orElseThrow(() -> new RuntimeException("Policy not found: " + policyNumber));
 
         return toDTO(policy);
+    }
+
+
+    @Override
+    public List<PolicyDTO> getPoliciesByAccount(Long accountId) {
+        return policyRepository.findAll().stream()
+                .filter(s -> s.getAccount().getId().equals(accountId))
+                .map(this::toDTO)
+                .toList();
+
     }
 
 
@@ -140,4 +159,7 @@ public class PolicyServiceImpl implements PolicyService {
                 .installmentAmount(policy.getInstallmentAmount())
                 .build();
     }
+
+
+
 }
