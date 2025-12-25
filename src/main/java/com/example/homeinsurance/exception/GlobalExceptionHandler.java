@@ -1,6 +1,8 @@
 package com.example.homeinsurance.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,5 +25,17 @@ public class GlobalExceptionHandler {
                 );
 
         return errors;
+    }
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<?> handleInvalidFormat(InvalidFormatException ex) {
+
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", "Invalid input value");
+        error.put("message", ex.getOriginalMessage());
+        error.put("invalidValue", ex.getValue());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(error);
     }
 }

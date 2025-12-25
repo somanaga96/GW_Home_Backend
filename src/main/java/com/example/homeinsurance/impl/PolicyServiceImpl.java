@@ -157,6 +157,7 @@ public class PolicyServiceImpl implements PolicyService {
                 .depositAmount(policy.getDepositAmount())
                 .installmentCount(policy.getInstallmentCount())
                 .installmentAmount(policy.getInstallmentAmount())
+                .status(policy.getStatus())
                 .build();
     }
 

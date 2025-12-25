@@ -1,5 +1,7 @@
 package com.example.homeinsurance.dto;
 
+import com.example.homeinsurance.exception.YesNoBooleanDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -22,6 +24,6 @@ public class PropertyDetailsDTO {
     @NotNull
     private Integer bedRooms;
 
-    @NotNull
+    @JsonDeserialize(using = YesNoBooleanDeserializer.class)
     private Boolean hasSecurityAlarm;
 }

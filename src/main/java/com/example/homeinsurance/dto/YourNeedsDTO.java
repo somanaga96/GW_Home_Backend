@@ -1,5 +1,7 @@
 package com.example.homeinsurance.dto;
 
+import com.example.homeinsurance.exception.YesNoBooleanDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -10,10 +12,14 @@ import lombok.*;
 public class YourNeedsDTO {
     @NotNull
     private String contentsCoverAmount;
-    private Boolean bikesOver500;
-    private Boolean highRiskItemsOver2000;
     private Boolean totalHighRiskValue;
 
     private Integer buildingsSumInsured;
     private Integer contentsSumInsured;
+    @JsonDeserialize(using = YesNoBooleanDeserializer.class)
+    private Boolean bikesOver500;
+
+    @JsonDeserialize(using = YesNoBooleanDeserializer.class)
+    private Boolean highRiskItemsOver2000;
+
 }

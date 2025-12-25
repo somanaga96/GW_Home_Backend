@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Builder
 public class PolicyDTO {
     private String policyNumber;
+    private String status;
     private LocalDate effectiveDate;
     private LocalDate expiryDate;
     private Double totalPremium;
